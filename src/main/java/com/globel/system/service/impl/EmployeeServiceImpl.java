@@ -1,5 +1,8 @@
 package com.globel.system.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.globel.system.dto.EmployeeDto;
@@ -31,6 +34,35 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Employee employee = employeeRepo.findById(id)
 				.orElseThrow(()-> new ResourceNotFoundException("Employee is not found By id : " + id));
 		return EmployeeMapper.mapToEmployeeDto(employee);
+	}
+
+	@Override
+	public List<EmployeeDto> getAllEmployee() {
+		List<Employee> employees = employeeRepo.findAll();
+		return employees.stream().map((employee) -> EmployeeMapper.mapToEmployeeDto(employee)).collect(Collectors.toList()) ;
+	}
+
+	@Override
+	public EmployeeDto updateById(Long id , EmployeeDto updateEmployee) {
+		Employee employee = employeeRepo.findById(id)
+				.orElseThrow(()-> new ResourceNotFoundException("Employee is not found By id : " + id));
+		
+		employee.setFirstName(updateEmployee.getFirstName());
+		employee.setLastName(updateEmployee.getLastName());
+		employee.setEmail(updateEmployee.getEmail());
+
+		Employee emp = employeeRepo.save(employee);
+		
+		return EmployeeMapper.mapToEmployeeDto(emp);
+	}
+
+	@Override
+	public void deleteEmployeeById(Long id) {
+
+		Employee employee = employeeRepo.findById(id)
+				.orElseThrow(()-> new ResourceNotFoundException("Employee is not found By id : " + id));
+		employeeRepo.deleteById(id);
+		
 	}
 
 }
